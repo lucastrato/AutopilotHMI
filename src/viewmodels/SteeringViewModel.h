@@ -8,7 +8,7 @@ class SteeringViewModel : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString heading
+    Q_PROPERTY(int heading
                READ heading
                WRITE setHeading
                NOTIFY headingChanged)
@@ -16,19 +16,15 @@ class SteeringViewModel : public QObject
 public:
     explicit SteeringViewModel(QObject *parent = nullptr);
 
-    QString heading() const;
+    int heading() const;
 
-    void setHeading(const QString &heading);
+    void setHeading(const int &heading);
 
 signals:
     void headingChanged();
 
-private slots:
-    void updateHeading();
-
-
 private:
-    QString m_heading = "127";
+    int m_heading = 127;
 
     QTimer m_timer;
 };

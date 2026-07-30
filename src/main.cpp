@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "src/viewmodels/SteeringViewModel.h"
+#include "src/controllers/AutopilotController.h"
+#include "drivers/QtSimulationDriver.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +14,13 @@ int main(int argc, char *argv[])
 
     // Create the ViewModel before the QML engine so it outlives it
     SteeringViewModel steeringViewModel;
+
+    // Create the AutopilotController
+    AutopilotController controller;
+
+    // Create Sim Driver
+    QtSimulationDriver simulator(controller,
+                                  steeringViewModel);
 
     // Create the QML engine
     QQmlApplicationEngine engine;
