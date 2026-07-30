@@ -19,12 +19,15 @@ qt_add_executable(appAutopilotHMI
 
 qt_add_qml_module(appAutopilotHMI
     URI AutopilotHMI
+
     QML_FILES
         qml/Main.qml
         qml/Dashboard.qml
         qml/components/ValueCard.qml
-        SOURCES src/viewmodels/SteeringViewModel.cpp
-        SOURCES src/viewmodels/SteeringViewModel.h
+
+    SOURCES
+        src/viewmodels/SteeringViewModel.cpp
+        src/viewmodels/SteeringViewModel.h
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

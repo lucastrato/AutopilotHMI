@@ -1,4 +1,3 @@
-#ifndef STEERINGVIEWMODEL_H
 
 #pragma once
 
@@ -26,7 +25,3 @@ signals:
 private:
     QString m_heading = "127";
 };
-
-#define STEERINGVIEWMODEL_H
-
-#endif // STEERINGVIEWMODEL_H
