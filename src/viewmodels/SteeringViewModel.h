@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include <QTimer>
 
 class SteeringViewModel : public QObject
 {
@@ -22,6 +23,12 @@ public:
 signals:
     void headingChanged();
 
+private slots:
+    void updateHeading();
+
+
 private:
     QString m_heading = "127";
+
+    QTimer m_timer;
 };
