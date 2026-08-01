@@ -4,8 +4,13 @@ import QtQuick.Controls
 Rectangle {
 
     property string title: " "
-    property string value: " "
+    property var value: " "
     property string unit: " "
+
+    property bool editable: false
+
+    signal increaseClicked()
+    signal decreaseClicked()
 
     radius: 8
     color: "#37474F"
@@ -27,11 +32,31 @@ Rectangle {
         }
 
         Label {
-            text: value + unit
+            text: typeof value === "number"
+                ? Number(value).toFixed(1) + unit
+                : value
             color: "white"
             font.pixelSize: 34
             horizontalAlignment: Text.AlignHCenter
             width: parent.width
+        }
+
+        Row {
+            visible: editable
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 10
+
+            Button {
+                text: "-"
+
+                onClicked: decreaseClicked()
+            }
+
+            Button {
+                text: "+"
+
+                onClicked: increaseClicked()
+            }
         }
     }
 }

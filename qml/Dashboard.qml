@@ -22,13 +22,18 @@ Rectangle {
 
         ValueCard {
             title: "Target"
-            value: "130"
+            value: steeringViewModel.targetHeading
             unit: "°"
+
+            editable: true
+
+            onIncreaseClicked: steeringViewModel.increaseTargetHeading()
+            onDecreaseClicked: steeringViewModel.decreaseTargetHeading()
         }
 
         ValueCard {
             title: "Rudder"
-            value: "-8"
+            value: steeringViewModel.rudderAngle
             unit: "°"
         }
 

@@ -1,0 +1,8 @@
+CompileFlags:
+  CompilationDatabase: build
+
+Diagnostics:
+  ClangTidy: Yes
+
+InlayHints:
+  Enabled: Yes

@@ -1,28 +1,36 @@
 #include "QtSimulationDriver.h"
+#include "Constants.h"
 
-#include "../controllers/AutopilotController.h"
-#include "../viewmodels/SteeringViewModel.h"
-
-
-QtSimulationDriver::QtSimulationDriver(
-    AutopilotController& controller,
-    SteeringViewModel& viewModel,
-    QObject* parent)
+QtSimulationDriver::QtSimulationDriver(QObject* parent)
     : QObject(parent)
-    , m_controller(controller)
-    , m_viewModel(viewModel)
 {
     connect(
         &m_timer, &QTimer::timeout,
         this,
         &QtSimulationDriver::onTimeout);
 
-    m_timer.start(1000);
+    m_timer.start(Constants::UiRefreshIntervalMs);
 }
 
 void QtSimulationDriver::onTimeout()
 {
-    m_controller.update();
+    //
+    // Update simulated values
+    //
 
-    m_viewModel.setHeading(m_controller.heading());
+    m_state.heading += 0.5;
+
+    if (m_state.heading >= Constants::FullCircleDeg)
+    {
+        m_state.heading -= Constants::FullCircleDeg;
+    }
+
+    m_state.rudderAngle = std::sin(m_state.heading * 0.05) * 25.0;
+
+    emit stateUpdated();
+}
+
+auto QtSimulationDriver::readState() -> DriverState
+{
+    return m_state;
 }

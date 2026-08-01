@@ -1,0 +1,37 @@
+BasedOnStyle: LLVM
+
+Language: Cpp
+
+Standard: c++17
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+ColumnLimit: 100
+
+BreakBeforeBraces: Allman
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+
+SpaceBeforeParens: ControlStatements
+
+SortIncludes: true
+
+NamespaceIndentation: None
+
+AccessModifierOffset: -4
+
+IndentCaseLabels: true
+
+ReflowComments: true
+
+DerivePointerAlignment: false

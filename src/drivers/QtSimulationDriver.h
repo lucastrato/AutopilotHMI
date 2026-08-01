@@ -3,24 +3,26 @@
 #include <QObject>
 #include <QTimer>
 
-class SteeringViewModel;
-class AutopilotController;
+#include "DriverState.h"
+#include "IControllerDriver.h"
 
-class QtSimulationDriver : public QObject
+class QtSimulationDriver : public QObject, public IControllerDriver
 {
     Q_OBJECT
 
 public:
-    QtSimulationDriver(AutopilotController& controller,
-                       SteeringViewModel& viewModel,
-                       QObject* parent = nullptr);
+    explicit QtSimulationDriver(QObject* parent = nullptr);
+
+    [[nodiscard]] auto readState() -> DriverState override;
+
+signals:
+    void stateUpdated();
 
 private slots:
     void onTimeout();
 
 private:
-    AutopilotController& m_controller;
-    SteeringViewModel& m_viewModel;
+    DriverState m_state;
 
     QTimer m_timer;
 };

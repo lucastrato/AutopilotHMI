@@ -1,14 +1,33 @@
 #pragma once
 
-class AutopilotController
+#include <memory>
+#include <vector>
+
+#include "ControllerState.h"
+#include "IAutopilotCommands.h"
+#include "IControllerDriver.h"
+#include "IControllerObserver.h"
+
+class AutopilotController : public IAutopilotCommands
 {
 public:
-    AutopilotController();
+    explicit AutopilotController(IControllerDriver& driver);
+
+    [[nodiscard]] auto state() const -> const ControllerState&;
 
     void update();
 
-    int heading() const;
+    void addObserver(IControllerObserver* observer);
+    void removeObserver(IControllerObserver* observer);
+
+    void increaseTargetHeading() override;
+    void decreaseTargetHeading() override;
 
 private:
-    int m_heading = 127;
+    void notifyObservers();
+
+    ControllerState m_state;
+    IControllerDriver& m_driver;
+
+    std::vector<IControllerObserver*> m_observers;
 };

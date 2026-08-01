@@ -2,21 +2,32 @@ cmake_minimum_required(VERSION 3.16)
 
 project(AutopilotHMI VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
-# Content of downloaded design from Figma to Qt or similar
+#
+# Optional imported content (Qt Design Studio)
+#
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/importedcontent)
+    add_subdirectory(importedcontent)
 endif()
 
+#
+# Executable
+#
 qt_add_executable(appAutopilotHMI
     src/main.cpp
 )
 
+#
+# QML Module
+#
 qt_add_qml_module(appAutopilotHMI
     URI AutopilotHMI
 
@@ -26,29 +37,65 @@ qt_add_qml_module(appAutopilotHMI
         qml/components/ValueCard.qml
 
     SOURCES
-        src/viewmodels/SteeringViewModel.h
-        src/viewmodels/SteeringViewModel.cpp
         src/controllers/AutopilotController.h
         src/controllers/AutopilotController.cpp
+        src/controllers/ControllerState.h
+
+        src/viewmodels/SteeringViewModel.h
+        src/viewmodels/SteeringViewModel.cpp
+
         src/drivers/QtSimulationDriver.h
         src/drivers/QtSimulationDriver.cpp
+        src/drivers/DriverState.h
+
+        src/interfaces/IControllerObserver.h
+        src/interfaces/IControllerDriver.h
+        src/interfaces/IAutopilotCommands.h
+
+        common/Constants.h
+
+    RESOURCES
+        .clang-format
+        .clangd
+        .clang-tidy
+
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
+#
+# Include directories
+#
+target_include_directories(appAutopilotHMI
+    PRIVATE
+        src/controllers
+        src/drivers
+        src/viewmodels
+        src/interfaces
+        common
+)
+
+#
+# Libraries
+#
+target_link_libraries(appAutopilotHMI
+    PRIVATE
+        Qt6::Quick
+)
+
+#
+# Bundle properties
+#
 set_target_properties(appAutopilotHMI PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appAutopilotHMI
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING
+        ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
-target_link_libraries(appAutopilotHMI
-    PRIVATE Qt6::Quick
-)
-
+#
+# Installation
+#
 install(TARGETS appAutopilotHMI
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

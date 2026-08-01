@@ -1,16 +1,51 @@
 #include "AutopilotController.h"
 
-AutopilotController::AutopilotController() = default;
-
-int AutopilotController::heading() const
-{
-    return m_heading;
-}
+AutopilotController::AutopilotController(IControllerDriver& driver) : m_driver(driver) {}
 
 void AutopilotController::update()
 {
-    ++m_heading;
+    const DriverState& driverState = m_driver.readState();
 
-    if(m_heading > 359)
-        m_heading = 0;
+    m_state.heading = driverState.heading;
+    m_state.rudderAngle = driverState.rudderAngle;
+
+    notifyObservers();
+}
+
+auto AutopilotController::state() const -> const ControllerState&
+{
+    return m_state;
+}
+
+void AutopilotController::addObserver(IControllerObserver* observer)
+{
+    m_observers.push_back(observer);
+}
+
+void AutopilotController::removeObserver(IControllerObserver* observer)
+{
+    auto iter = std::remove(m_observers.begin(), m_observers.end(), observer);
+    m_observers.erase(iter, m_observers.end());
+}
+
+void AutopilotController::notifyObservers()
+{
+    for (auto* observer : m_observers)
+    {
+        observer->onStateChanged(m_state);
+    }
+}
+
+void AutopilotController::increaseTargetHeading()
+{
+    m_state.targetHeading += 1.0;
+
+    notifyObservers();
+}
+
+void AutopilotController::decreaseTargetHeading()
+{
+    m_state.targetHeading -= 1.0;
+
+    notifyObservers();
 }
