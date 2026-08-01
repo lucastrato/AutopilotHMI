@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "QtSimulationDriver.h"
 #include "Constants.h"
 
@@ -9,7 +11,7 @@ QtSimulationDriver::QtSimulationDriver(QObject* parent)
         this,
         &QtSimulationDriver::onTimeout);
 
-    m_timer.start(Constants::UiRefreshIntervalMs);
+    m_timer.start(Constants::SimulationUpdateIntervalMs);
 }
 
 void QtSimulationDriver::onTimeout()
@@ -18,14 +20,14 @@ void QtSimulationDriver::onTimeout()
     // Update simulated values
     //
 
-    m_state.heading += 0.5;
+    m_state.heading += m_state.rudderAngle * Constants::HeadingRateGain;
 
     if (m_state.heading >= Constants::FullCircleDeg)
     {
         m_state.heading -= Constants::FullCircleDeg;
     }
 
-    m_state.rudderAngle = std::sin(m_state.heading * 0.05) * 25.0;
+    m_state.rudderAngle += (m_commands.rudderSetPoint - m_state.rudderAngle) * 0.2;
 
     emit stateUpdated();
 }
@@ -33,4 +35,11 @@ void QtSimulationDriver::onTimeout()
 auto QtSimulationDriver::readState() -> DriverState
 {
     return m_state;
+}
+
+void QtSimulationDriver::writeCommands(const DriverCommands& commands)
+{
+    qDebug() << "Rudder setpoint:" << commands.rudderSetPoint;
+
+    m_commands = commands;
 }

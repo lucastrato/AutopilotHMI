@@ -21,11 +21,12 @@ Rectangle {
         }
 
         ValueCard {
-            title: "Target"
+            title: "Target Heading"
             value: steeringViewModel.targetHeading
             unit: "°"
 
             editable: true
+            enabled: steeringViewModel.isAuto
 
             onIncreaseClicked: steeringViewModel.increaseTargetHeading()
             onDecreaseClicked: steeringViewModel.decreaseTargetHeading()
@@ -35,11 +36,26 @@ Rectangle {
             title: "Rudder"
             value: steeringViewModel.rudderAngle
             unit: "°"
+
+            editable: true
+            enabled: steeringViewModel.isManual
+
+            onIncreaseClicked:
+                steeringViewModel.increaseRudder()
+
+            onDecreaseClicked:
+                steeringViewModel.decreaseRudder()
         }
 
-        ValueCard {
-            title: "Mode"
-            value: "AUTO"
+        ModeSelector {
+
+            mode: steeringViewModel.mode
+
+            onStandbyClicked: steeringViewModel.setStandbyMode()
+
+            onManualClicked: steeringViewModel.setManualMode()
+
+            onAutoClicked: steeringViewModel.setAutoMode()
         }
     }
 }

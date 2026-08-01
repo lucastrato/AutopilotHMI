@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QTimer>
 
-#include "DriverState.h"
 #include "IControllerDriver.h"
 
 class QtSimulationDriver : public QObject, public IControllerDriver
@@ -15,6 +14,8 @@ public:
 
     [[nodiscard]] auto readState() -> DriverState override;
 
+    void writeCommands(const DriverCommands& commands) override;
+
 signals:
     void stateUpdated();
 
@@ -23,6 +24,7 @@ private slots:
 
 private:
     DriverState m_state;
+    DriverCommands m_commands;
 
     QTimer m_timer;
 };

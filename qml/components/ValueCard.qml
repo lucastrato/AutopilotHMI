@@ -2,12 +2,14 @@ import QtQuick
 import QtQuick.Controls
 
 Rectangle {
+    id: root
 
     property string title: " "
     property var value: " "
     property string unit: " "
 
     property bool editable: false
+    property bool enabled: true
 
     signal increaseClicked()
     signal decreaseClicked()
@@ -43,18 +45,22 @@ Rectangle {
 
         Row {
             visible: editable
+            enabled: parent.enabled
+
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 10
 
             Button {
                 text: "-"
-
+                visible: editable
+                enabled: editable && root.enabled
                 onClicked: decreaseClicked()
             }
 
             Button {
                 text: "+"
-
+                visible: editable
+                enabled: editable && root.enabled
                 onClicked: increaseClicked()
             }
         }

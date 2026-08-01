@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <cmath>
 
 #include "SteeringViewModel.h"
 
@@ -9,17 +10,35 @@ SteeringViewModel::SteeringViewModel(IAutopilotCommands& commands, QObject* pare
 
 auto SteeringViewModel::heading() const -> double
 {
-    return m_heading;
+    return m_displayState.heading;
+    ;
 }
 
 auto SteeringViewModel::targetHeading() const -> double
 {
-    return m_targetHeading;
+    return m_displayState.targetHeading;
 }
 
 auto SteeringViewModel::rudderAngle() const -> double
 {
-    return m_rudderAngle;
+    return m_displayState.rudderAngle;
+}
+
+auto SteeringViewModel::mode() const -> QString
+{
+    switch (m_displayState.mode)
+    {
+        case AutopilotMode::Standby:
+            return "Standby";
+
+        case AutopilotMode::Manual:
+            return "Manual";
+
+        case AutopilotMode::Auto:
+            return "Auto";
+    }
+
+    return "Unknown";
 }
 
 void SteeringViewModel::onStateChanged(const ControllerState& state)
@@ -29,6 +48,7 @@ void SteeringViewModel::onStateChanged(const ControllerState& state)
     changed |= setHeading(state.heading);
     changed |= setTargetHeading(state.targetHeading);
     changed |= setRudderAngle(state.rudderAngle);
+    changed |= setMode(state.mode);
 
     if (changed)
     {
@@ -38,12 +58,12 @@ void SteeringViewModel::onStateChanged(const ControllerState& state)
 
 auto SteeringViewModel::setHeading(double heading) -> bool
 {
-    if (m_heading == heading)
+    if (m_displayState.heading == heading)
     {
         return false;
     }
 
-    m_heading = heading;
+    m_displayState.heading = heading;
 
     emit headingChanged();
 
@@ -52,12 +72,12 @@ auto SteeringViewModel::setHeading(double heading) -> bool
 
 auto SteeringViewModel::setTargetHeading(double targetHeading) -> bool
 {
-    if (m_targetHeading == targetHeading)
+    if (m_displayState.targetHeading == targetHeading)
     {
         return false;
     }
 
-    m_targetHeading = targetHeading;
+    m_displayState.targetHeading = targetHeading;
 
     emit targetHeadingChanged();
 
@@ -66,24 +86,101 @@ auto SteeringViewModel::setTargetHeading(double targetHeading) -> bool
 
 auto SteeringViewModel::setRudderAngle(double rudderAngle) -> bool
 {
-    if (m_rudderAngle == rudderAngle)
+    if (m_displayState.rudderAngle == rudderAngle)
     {
         return false;
     }
 
-    m_rudderAngle = rudderAngle;
+    m_displayState.rudderAngle = rudderAngle;
 
     emit rudderAngleChanged();
 
     return true;
 }
 
+auto SteeringViewModel::setMode(AutopilotMode mode) -> bool
+{
+    if (m_displayState.mode == mode)
+    {
+        return false;
+    }
+
+    m_displayState.mode = mode;
+
+    emit modeChanged();
+
+    return true;
+}
+
 void SteeringViewModel::increaseTargetHeading()
 {
-    m_commands.increaseTargetHeading();
+    if (m_displayState.mode != AutopilotMode::Auto)
+        return;
+
+    const double targetHeading = std::round(m_displayState.targetHeading);
+
+    m_commands.setTargetHeading(targetHeading + 1.0);
 }
 
 void SteeringViewModel::decreaseTargetHeading()
 {
-    m_commands.decreaseTargetHeading();
+    if (m_displayState.mode != AutopilotMode::Auto)
+        return;
+
+    const double targetHeading = std::round(m_displayState.targetHeading);
+
+    m_commands.setTargetHeading(targetHeading - 1.0);
+}
+
+void SteeringViewModel::increaseRudder()
+{
+    if (m_displayState.mode != AutopilotMode::Manual)
+        return;
+
+    const double rudder = std::round(m_displayState.rudderAngle);
+
+    m_commands.setRudder(rudder + 1.0);
+}
+
+void SteeringViewModel::decreaseRudder()
+{
+    if (m_displayState.mode != AutopilotMode::Manual)
+        return;
+
+    const double rudder = std::round(m_displayState.rudderAngle);
+
+    m_commands.setRudder(rudder - 1.0);
+}
+
+void SteeringViewModel::setStandbyMode()
+
+{
+    m_commands.setMode(AutopilotMode::Standby);
+}
+
+void SteeringViewModel::setManualMode()
+
+{
+    m_commands.setMode(AutopilotMode::Manual);
+}
+
+void SteeringViewModel::setAutoMode()
+
+{
+    m_commands.setMode(AutopilotMode::Auto);
+}
+
+auto SteeringViewModel::isStandby() const -> bool
+{
+    return m_displayState.mode == AutopilotMode::Standby;
+}
+
+auto SteeringViewModel::isManual() const -> bool
+{
+    return m_displayState.mode == AutopilotMode::Manual;
+}
+
+auto SteeringViewModel::isAuto() const -> bool
+{
+    return m_displayState.mode == AutopilotMode::Auto;
 }

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "AutopilotMode.h"
+
 class IAutopilotCommands
 {
 public:
     virtual ~IAutopilotCommands() = default;
 
-    virtual void increaseTargetHeading() = 0;
-    virtual void decreaseTargetHeading() = 0;
+    virtual void setTargetHeading(double heading) = 0;
+    virtual void setRudder(double rudderAngle) = 0;
+    virtual void setMode(AutopilotMode mode) = 0;
 };

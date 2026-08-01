@@ -19,6 +19,15 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
 endif()
 
 #
+# Libraries
+#
+add_library(AutopilotCore STATIC
+    src/controllers/AutopilotController.cpp
+    src/controllers/HeadingController.cpp
+    src/utils/MathUtils.cpp
+)
+
+#
 # Executable
 #
 qt_add_executable(appAutopilotHMI
@@ -40,13 +49,18 @@ qt_add_qml_module(appAutopilotHMI
         src/controllers/AutopilotController.h
         src/controllers/AutopilotController.cpp
         src/controllers/ControllerState.h
+        src/controllers/HeadingController.h
+        src/controllers/HeadingController.cpp
+        src/controllers/AutopilotMode.h
 
         src/viewmodels/SteeringViewModel.h
         src/viewmodels/SteeringViewModel.cpp
+        src/viewmodels/DisplayState.h
 
         src/drivers/QtSimulationDriver.h
         src/drivers/QtSimulationDriver.cpp
         src/drivers/DriverState.h
+        src/drivers/DriverCommands.h
 
         src/interfaces/IControllerObserver.h
         src/interfaces/IControllerDriver.h
@@ -54,11 +68,14 @@ qt_add_qml_module(appAutopilotHMI
 
         common/Constants.h
 
+        src/utils/MathUtils.h
+        src/utils/MathUtils.cpp
+
     RESOURCES
         .clang-format
         .clangd
         .clang-tidy
-
+        QML_FILES qml/components/ModeSelector.qml
 )
 
 #
@@ -70,8 +87,26 @@ target_include_directories(appAutopilotHMI
         src/drivers
         src/viewmodels
         src/interfaces
+        src/utils
         common
 )
+
+target_include_directories(AutopilotCore
+    PUBLIC
+        src
+        src/controllers
+        src/drivers
+        src/interfaces
+        src/utils
+        common
+)
+
+option(BUILD_TESTS "Build unit tests" ON)
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 #
 # Libraries
@@ -79,6 +114,7 @@ target_include_directories(appAutopilotHMI
 target_link_libraries(appAutopilotHMI
     PRIVATE
         Qt6::Quick
+        AutopilotCore
 )
 
 #
