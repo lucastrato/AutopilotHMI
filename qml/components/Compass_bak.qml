@@ -7,22 +7,6 @@ Item {
     property real heading: 0
     property real displayedRotation: 0
 
-    readonly property real outerMargin: width * 0.02
-
-    readonly property real tickMajor: width * 0.05
-    readonly property real tickMinor: width * 0.025
-
-    readonly property real degreeRadius: width * 0.075
-    readonly property real cardinalRadius: width * 0.15
-
-    readonly property real arrowWidth: width * 0.062
-    readonly property real arrowHeight: width * 0.087
-
-    readonly property real headingFont: width * 0.094
-    readonly property real cardinalFont: width * 0.069
-    readonly property real majorFont: width * 0.053
-    readonly property real minorFont: width * 0.038
-
     onHeadingChanged: {
         var target = -heading;
         var delta = target - displayedRotation;
@@ -48,7 +32,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        anchors.margins: root.outerMargin
+        anchors.margins: 6
 
         radius: width / 2
 
@@ -80,12 +64,12 @@ Item {
 
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: root.outerMargin
+                anchors.topMargin: 6
 
                 transform: Rotation {
                     angle: index * 10
                     origin.x: width / 2
-                    origin.y: compassTicks.height / 2 - root.outerMargin
+                    origin.y: compassTicks.height / 2 - 6
                 }
             }
         }
@@ -100,17 +84,17 @@ Item {
                 text: angle === 0 ? "360" : angle
 
                 color: angle % 90 === 0 ? "white" : "#B0BEC5"
-                font.pixelSize: angle % 90 === 0 ? root.majorFont : root.minorFont
+                font.pixelSize: angle % 90 === 0 ? 17 : 12
                 font.bold: angle % 90 === 0
 
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: root.degreeRadius
+                anchors.topMargin: root.height * 0.075
 
                 transform: Rotation {
                     angle: index * 30
                     origin.x: width / 2
-                    origin.y: compassTicks.height / 2 - root.degreeRadius
+                    origin.y: compassTicks.height / 2 - root.height * 0.075
                 }
             }
         }
@@ -162,17 +146,17 @@ Item {
 
                 color: modelData.text === "N" ? "#66BB6A" : "white"
 
-                font.pixelSize: root.cardinalFont
+                font.pixelSize: 22
                 font.bold: true
 
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: root.cardinalRadius
+                anchors.topMargin: root.height * 0.15
 
                 transform: Rotation {
                     angle: modelData.angle
                     origin.x: width / 2
-                    origin.y: compassCardinals.height / 2 - root.cardinalRadius
+                    origin.y: compassCardinals.height / 2 - root.height * 0.15
                 }
             }
         }
@@ -180,12 +164,12 @@ Item {
 
     Canvas {
         id: northArrow
-        width: root.arrowWidth
-        height: root.arrowHeight
+        width: 20
+        height: 28
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: root.tickMajor
+        anchors.topMargin: 16
 
         z: 30
 
@@ -217,7 +201,7 @@ Item {
 
         color: "white"
 
-        font.pixelSize: root.headingFont
+        font.pixelSize: 30
         font.bold: true
 
         style: Text.Outline

@@ -1,3 +1,8 @@
+/**
+ * @file SteeringViewModel.cpp
+ * @brief Implementation of the QML steering ViewModel.
+ */
+
 #include <QDebug>
 #include <cmath>
 
@@ -134,10 +139,17 @@ void SteeringViewModel::decreaseTargetHeading()
 
 void SteeringViewModel::selectTargetHeading(double heading)
 {
+    /*
+     * The ViewModel does not normalize headings.
+     *
+     * The controller layer owns navigation rules
+     * and heading wrap-around handling.
+     */
+
     if (m_displayState.mode != AutopilotMode::Auto)
         return;
 
-    m_commands.setTargetHeading(heading);
+    m_commands.setTargetHeading(std::floor(heading));
 }
 
 void SteeringViewModel::increaseRudder()
@@ -164,24 +176,35 @@ void SteeringViewModel::selectRudderAngle(double rudderAngle)
 {
     if (m_displayState.mode != AutopilotMode::Manual)
         return;
-
-    m_commands.setRudder(rudderAngle);
+    /*
+     * Rudder commands are only accepted in MANUAL mode.
+     *
+     * This prevents accidental manual override while
+     * AUTO steering is controlling the vessel.
+     */
+    m_commands.setRudder(std::floor(rudderAngle));
 }
 
-void SteeringViewModel::setStandbyMode()
+/*
+ * Mode selection is delegated to the controller.
+ *
+ * The ViewModel only acts as an adapter between
+ * QML events and backend commands.
+ */
 
+void SteeringViewModel::setStandbyMode()
 {
+
     m_commands.setMode(AutopilotMode::Standby);
 }
 
 void SteeringViewModel::setManualMode()
-
 {
+
     m_commands.setMode(AutopilotMode::Manual);
 }
 
 void SteeringViewModel::setAutoMode()
-
 {
     m_commands.setMode(AutopilotMode::Auto);
 }

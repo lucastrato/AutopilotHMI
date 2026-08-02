@@ -8,36 +8,87 @@ Rectangle {
 
     signal clicked()
 
-    width: 50
-    height: 34
+    readonly property int cornerRadius: 8
+    readonly property int borderWidth: 1
+    readonly property int innerMargin: 1
 
-    radius: 8
+    readonly property real pressedScale: 0.92
+    readonly property real disabledOpacity: 0.35
 
-    color:
-        !enabled ? "#37474F"
-      : mouse.pressed ? "#607D8B"
-      : "#455A64"
+    readonly property int animationDuration: 80
 
-    border.width: 1
-    border.color: "#607D8B"
+    readonly property int textSize: 22
+    readonly property int textVerticalOffset: -2
 
-    scale: mouse.pressed ? 0.92 : 1.0
+    readonly property color topColor: "#607D8B"
+    readonly property color pressedTopColor: "#546E7A"
+    readonly property color bottomColor: "#455A64"
+
+    readonly property color borderColor: "#90A4AE"
+    readonly property color innerBorderColor: "#263238"
+
+    readonly property color textColor: "#ECEFF1"
+
+    implicitWidth: 56
+    implicitHeight: 30
+
+    radius: cornerRadius
+
+    gradient: Gradient {
+
+        GradientStop {
+            position: 0.0
+            color: mouse.pressed ? pressedTopColor : topColor
+        }
+
+        GradientStop {
+            position: 1.0
+            color: bottomColor
+        }
+    }
+
+    opacity: enabled ? 1.0 : disabledOpacity
+
+    border.width: borderWidth
+    border.color: borderColor
+
+    scale: mouse.pressed ? pressedScale : 1.0
 
     Behavior on scale {
         NumberAnimation {
-            duration: 80
+            duration: animationDuration
         }
+    }
+
+    Rectangle {
+
+        anchors.fill: parent
+        anchors.margins: innerMargin
+
+        radius: cornerRadius - 1
+
+        color: "transparent"
+
+        border.width: borderWidth
+        border.color: innerBorderColor
+
+        opacity: disabledOpacity
     }
 
     Text {
         anchors.centerIn: parent
 
+        anchors.verticalCenterOffset: textVerticalOffset
+
         text: root.buttonText
 
-        color: "white"
+        color: textColor
 
-        font.pixelSize: 20
+        font.pixelSize: textSize
         font.bold: true
+
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
     }
 
     MouseArea {
@@ -47,7 +98,9 @@ Rectangle {
 
         enabled: root.enabled
 
-        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        cursorShape: enabled
+                     ? Qt.PointingHandCursor
+                     : Qt.ArrowCursor
 
         onClicked: root.clicked()
     }

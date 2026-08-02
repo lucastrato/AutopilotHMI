@@ -1,3 +1,15 @@
+/**
+ * @file ControllerState.h
+ * @brief Defines the state representation used by the autopilot controller.
+ *
+ * This file contains the data structures used to represent the current
+ * operating state of the autopilot system, including the active mode and
+ * related controller information.
+ *
+ * This structure acts as a container shared between the controller logic and
+ * the UI layer, providing the current mode and navigation-related values.
+ */
+
 #pragma once
 
 #include "AutopilotMode.h"

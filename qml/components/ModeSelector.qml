@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
@@ -11,87 +10,83 @@ Rectangle {
     signal manualClicked()
     signal autoClicked()
 
-    color: "#263238"
-    radius: 10
+    readonly property int cornerRadius: 12
+    readonly property int borderWidth: 1
+    readonly property int contentMargin: 4
+    readonly property int buttonSpacing: 4
+
+    readonly property color borderColor: "#607D8B"
+    readonly property color backgroundTop: "#455A64"
+    readonly property color backgroundBottom: "#37474F"
+
+    readonly property color standbyColor: "#546E7A"
+    readonly property color manualColor: "#FB8C00"
+    readonly property color autoColor: "#42A5F5"
 
     implicitWidth: 320
-    implicitHeight: 80
+    implicitHeight: 60
+
+    radius: cornerRadius
+
+    gradient: Gradient {
+        GradientStop {
+            position: 0.0
+            color: backgroundTop
+        }
+
+        GradientStop {
+            position: 1.0
+            color: backgroundBottom
+        }
+    }
+
+    border.width: borderWidth
+    border.color: borderColor
 
     RowLayout {
+
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 10
+        anchors.margins: contentMargin
 
-        Rectangle {
+        spacing: buttonSpacing
+
+        ModeButton {
+
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: 8
-            color: root.mode === "Standby"
-                   ? "#4CAF50"
-                   : "#455A64"
 
-            border.color: "#90A4AE"
-            border.width: 1
+            text: "STBY"
 
-            Text {
-                anchors.centerIn: parent
-                text: "STBY"
-                color: "white"
-                font.bold: true
-            }
+            active: root.mode === "Standby"
+            activeColor: standbyColor
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.standbyClicked()
-            }
+            onClicked: root.standbyClicked()
         }
 
-        Rectangle {
+        ModeButton {
+
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: 8
-            color: root.mode === "Manual"
-                   ? "#4CAF50"
-                   : "#455A64"
 
-            border.color: "#90A4AE"
-            border.width: 1
+            text: "MAN"
 
-            Text {
-                anchors.centerIn: parent
-                text: "MAN"
-                color: "white"
-                font.bold: true
-            }
+            active: root.mode === "Manual"
+            activeColor: manualColor
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.manualClicked()
-            }
+            onClicked: root.manualClicked()
         }
 
-        Rectangle {
+        ModeButton {
+
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: 8
-            color: root.mode === "Auto"
-                   ? "#4CAF50"
-                   : "#455A64"
 
-            border.color: "#90A4AE"
-            border.width: 1
+            text: "AUTO"
 
-            Text {
-                anchors.centerIn: parent
-                text: "AUTO"
-                color: "white"
-                font.bold: true
-            }
+            active: root.mode === "Auto"
+            activeColor: autoColor
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.autoClicked()
-            }
+            onClicked: root.autoClicked()
         }
     }
 }

@@ -1,3 +1,8 @@
+/**
+ * @file HeadingController.cpp
+ * @brief Implementation of the heading controller.
+ */
+
 #include "HeadingController.h"
 #include "Constants.h"
 #include "MathUtils.h"
@@ -7,9 +12,10 @@
 auto HeadingController::computeRudderSetPoint(double targetHeading, double currentHeading) const
     -> double
 {
-    double error = MathUtils::normalizeHeading(targetHeading - currentHeading);
-
+    /// Computes the shortest rotation direction.
+    double error = MathUtils::headingError(targetHeading, currentHeading);
+    /// Apply proportional control.
     const double rudder = error * Constants::HeadingControllerKp;
-
+    /// Prevent commands outside the physical rudder limits.
     return std::clamp(rudder, -Constants::RudderMaxAngle, Constants::RudderMaxAngle);
 }

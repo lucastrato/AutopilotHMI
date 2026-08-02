@@ -1,5 +1,10 @@
+/**
+ * @file AutopilotController.cpp
+ * @brief Implementation of the autopilot control logic.
+ */
+
 #include <algorithm>
-#include <iostream>
+// #include <iostream>
 
 #include "AutopilotController.h"
 #include "Constants.h"
@@ -9,6 +14,16 @@ AutopilotController::AutopilotController(IControllerDriver& driver) : m_driver(d
 
 void AutopilotController::update()
 {
+    /*
+     * Update cycle:
+     *
+     * 1. Read latest vehicle data.
+     * 2. Update internal state.
+     * 3. Generate commands according to current mode.
+     * 4. Send commands to driver.
+     * 5. Notify observers.
+     */
+
     const DriverState& driverState = m_driver.readState();
     DriverCommands commands;
 
@@ -19,15 +34,18 @@ void AutopilotController::update()
     switch (m_state.mode)
     {
         case AutopilotMode::Standby:
+            // No control action required.
             break;
 
         case AutopilotMode::Manual:
+            // In manual mode the operator directly controls the rudder.
             commands.rudderSetPoint = m_state.targetRudderAngle;
 
             m_driver.writeCommands(commands);
             break;
 
         case AutopilotMode::Auto:
+            // Automatic steering computes rudder correction from heading error.
             commands.rudderSetPoint =
                 m_headingController.computeRudderSetPoint(m_state.targetHeading, m_state.heading);
 
@@ -90,23 +108,36 @@ void AutopilotController::setMode(AutopilotMode mode)
     switch (mode)
     {
         case AutopilotMode::Standby:
-            // Reset operator references
+            /*
+             * When entering standby:
+             * - stop active steering commands.
+             * - synchronize target heading with current heading.
+             */
+
             m_state.targetHeading = m_state.heading;
-            // Release rudder
             commands.rudderSetPoint = 0.0;
             m_driver.writeCommands(commands);
             break;
 
         case AutopilotMode::Manual:
-            // Operator starts from current rudder position
+
+            /*
+             * Manual control starts from the current rudder position
+             * to avoid a sudden command jump.
+             */
+
             commands.rudderSetPoint = m_state.rudderAngle;
             m_driver.writeCommands(commands);
-            // Keep target heading aligned with current heading
             m_state.targetHeading = m_state.heading;
             break;
 
         case AutopilotMode::Auto:
-            // Hold the current course
+
+            /*
+             * Auto mode initially holds the current course.
+             * The operator can then select a different target heading.
+             */
+
             m_state.targetHeading = m_state.heading;
             break;
     }

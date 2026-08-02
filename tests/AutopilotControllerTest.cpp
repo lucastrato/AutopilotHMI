@@ -54,8 +54,9 @@ TEST(AutopilotController, PositiveHeadingErrorProducesPositiveRudderCommand)
 
     AutopilotController controller(driver);
 
-    controller.setTargetHeading(40.0);
     controller.setMode(AutopilotMode::Auto);
+
+    controller.setTargetHeading(40.0);
 
     controller.update();
 
@@ -70,8 +71,9 @@ TEST(AutopilotController, NegativeHeadingErrorProducesNegativeRudderCommand)
 
     AutopilotController controller(driver);
 
-    controller.setTargetHeading(0.0);
     controller.setMode(AutopilotMode::Auto);
+
+    controller.setTargetHeading(0.0);
 
     controller.update();
 
@@ -86,8 +88,9 @@ TEST(AutopilotController, ZeroHeadingErrorProducesZeroRudderCommand)
 
     AutopilotController controller(driver);
 
-    controller.setTargetHeading(50.0);
     controller.setMode(AutopilotMode::Auto);
+
+    controller.setTargetHeading(50.0);
 
     controller.update();
 

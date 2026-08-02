@@ -81,6 +81,17 @@ qt_add_qml_module(appAutopilotHMI
         QML_FILES qml/components/NavButton.qml
         QML_FILES qml/components/NumericInputDialog.qml
         QML_FILES qml/components/RudderGauge.qml
+        QML_FILES
+        QML_FILES qml/components/ModeButton.qml
+        QML_FILES
+        QML_FILES
+        QML_FILES
+        QML_FILES qml/components/DebugRectangle.qml
+        QML_FILES qml/components/HeadingControl.qml
+        QML_FILES
+        QML_FILES
+        QML_FILES
+        SOURCES
 )
 
 #

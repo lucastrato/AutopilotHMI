@@ -21,9 +21,7 @@
 #include <QObject>
 
 #include "ControllerState.h"
-#include "DisplayState.h"
 #include "IAutopilotCommands.h"
-#include "IControllerObserver.h"
 
 /**
  * @class SteeringViewModel
@@ -42,8 +40,7 @@
  * Properties are exposed to QML using Q_PROPERTY and updated through
  * Qt signals whenever the backend state changes.
  */
-
-class SteeringViewModel : public QObject, public IControllerObserver
+class SteeringViewModel : public QObject
 {
     Q_OBJECT
 
@@ -81,123 +78,101 @@ class SteeringViewModel : public QObject, public IControllerObserver
      */
     Q_PROPERTY(bool isManual READ isManual NOTIFY modeChanged)
 
-    /**
-     * @brief True when steering is in standby.
-     */
-    Q_PROPERTY(bool isStandby READ isStandby NOTIFY modeChanged)
-
 public:
+    /**
+     * @brief Creates the ViewModel.
+     *
+     * @param commands Interface used to send commands to the autopilot.
+     * @param parent Qt parent object.
+     */
     explicit SteeringViewModel(IAutopilotCommands& commands, QObject* parent = nullptr);
 
     /**
-     * @brief increase target heading command.
+     * @brief Returns current heading.
      */
-    Q_INVOKABLE void increaseTargetHeading();
+    double heading() const;
 
     /**
-     * @brief decrease target heading command.
+     * @brief Returns selected target heading.
      */
-    Q_INVOKABLE void decreaseTargetHeading();
+    double targetHeading() const;
 
     /**
-     * @brief changes target heading command.
+     * @brief Returns current rudder angle.
+     */
+    double rudderAngle() const;
+
+    /**
+     * @brief Returns current operating mode.
+     */
+    QString mode() const;
+
+    /**
+     * @brief Returns whether AUTO mode is active.
+     */
+    bool isAuto() const;
+
+    /**
+     * @brief Returns whether MANUAL mode is active.
+     */
+    bool isManual() const;
+
+public slots:
+
+    /**
+     * @brief Selects AUTO mode.
+     */
+    void setAutoMode();
+
+    /**
+     * @brief Selects MANUAL mode.
+     */
+    void setManualMode();
+
+    /**
+     * @brief Selects standby mode.
+     */
+    void setStandbyMode();
+
+    /**
+     * @brief Changes target heading.
      *
-     * @param angle Desired heading angle.
+     * @param heading Desired heading in degrees.
      */
-    Q_INVOKABLE void selectTargetHeading(double heading);
-
-    /**
-     * @brief increase rudder command.
-     */
-    Q_INVOKABLE void increaseRudder();
-
-    /**
-     * @brief decrease rudder command.
-     */
-    Q_INVOKABLE void decreaseRudder();
+    void selectTargetHeading(double heading);
 
     /**
      * @brief Changes rudder command.
      *
      * @param angle Desired rudder angle.
      */
-    Q_INVOKABLE void selectRudderAngle(double rudderAngle);
-
-    /**
-     * @brief Selects STANDBY mode.
-     */
-    Q_INVOKABLE void setStandbyMode();
-
-    /**
-     * @brief Selects MANUAL mode.
-     */
-    Q_INVOKABLE void setManualMode();
-
-    /**
-     * @brief Selects AUTO mode.
-     */
-    Q_INVOKABLE void setAutoMode();
-
-    /**
-     * @brief Returns current heading.
-     */
-    [[nodiscard]] auto heading() const -> double;
-
-    /**
-     * @brief Returns current target heading.
-     */
-    [[nodiscard]] auto targetHeading() const -> double;
-
-    /**
-     * @brief Returns current rudder angle.
-     */
-    [[nodiscard]] auto rudderAngle() const -> double;
-
-    /**
-     * @brief Returns current mode.
-     */
-    [[nodiscard]] auto mode() const -> QString;
-
-    /**
-     * @brief Returns wether STANDBY is selected.
-     */
-    [[nodiscard]] auto isStandby() const -> bool;
-
-    /**
-     * @brief Returns wether MANUAL is selected.
-     */
-    [[nodiscard]] auto isManual() const -> bool;
-
-    /**
-     * @brief Returns wether AUTO is selected.
-     */
-    [[nodiscard]] auto isAuto() const -> bool;
-
-    /**
-     * @brief Performed when controller state changes.
-     *
-     * @param reference to controller state, passed by AutopilotController.
-     */
-    void onStateChanged(const ControllerState& state) override;
+    void selectRudderAngle(double angle);
 
 signals:
+
     /// Emitted when heading changes.
     void headingChanged();
+
     /// Emitted when target heading changes.
     void targetHeadingChanged();
+
     /// Emitted when rudder angle changes.
     void rudderAngleChanged();
-    /// Emitted when mode changes.
+
+    /// Emitted when autopilot mode changes.
     void modeChanged();
 
 private:
-    [[nodiscard]] auto setHeading(double heading) -> bool;
-    [[nodiscard]] auto setTargetHeading(double targetHeading) -> bool;
-    [[nodiscard]] auto setRudderAngle(double rudderAngle) -> bool;
-    [[nodiscard]] auto setMode(AutopilotMode mode) -> bool;
+    /**
+     * @brief Updates properties from backend state.
+     *
+     * Called when new controller data is received.
+     */
+    void updateState(const ControllerState& state);
 
     /// Backend command interface.
     IAutopilotCommands& m_commands;
-    /// UI State.
-    DisplayState m_displayState;
+
+    /// Latest controller state.
+    ControllerState m_state;
 };

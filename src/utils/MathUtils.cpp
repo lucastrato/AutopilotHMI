@@ -20,4 +20,14 @@ auto normalizeHeading(double heading) -> double
     return heading;
 }
 
+double headingError(double target, double current)
+{
+    double error = normalizeHeading(target - current);
+
+    if (error > Constants::HalfCircleDeg)
+        error -= Constants::FullCircleDeg;
+
+    return error;
+}
+
 } // namespace MathUtils

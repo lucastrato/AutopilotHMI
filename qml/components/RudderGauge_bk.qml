@@ -274,14 +274,15 @@ Item {
     //----------------------------------------------------
     // Value
     //----------------------------------------------------
-    Item {
 
-        width: parent.width
-        height: valueText.height
+    Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
 
         y: root.gaugeCenterY - root.gaugeRadius * 0.5
+
+        width: valueText.width + unitText.width
+        height: valueText.height
 
         opacity: root.manualMode ? 1 : 0.45
 
@@ -292,10 +293,10 @@ Item {
         }
 
         Text {
+
             id: valueText
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: parent
 
             text: Number(root.rudderAngle).toFixed(1)
 
@@ -309,7 +310,13 @@ Item {
         }
 
         Text {
+
             id: unitText
+
+            anchors.left: valueText.right
+            anchors.top: valueText.top
+
+            anchors.topMargin: root.unitFont * 0.2
 
             text: "°"
 
@@ -319,15 +326,8 @@ Item {
 
             style: Text.Outline
             styleColor: "#263238"
-
-            anchors.left: valueText.right
-            anchors.leftMargin: root.valueFont * 0.03
-
-            anchors.top: valueText.top
-            anchors.topMargin: root.unitFont * 0.2
         }
     }
-
     //----------------------------------------------------
     // Controls
     //----------------------------------------------------

@@ -2,8 +2,12 @@ import QtQuick
 import QtQuick.Controls
 
 ApplicationWindow {
-    width: 1024
-    height: 600
+
+    readonly property real mainWindowWidth: 800
+    readonly property real mainWindowHeight: 600
+
+    width: mainWindowWidth
+    height: mainWindowHeight
     visible: true
 
     title: "Marine Autopilot"
