@@ -1,15 +1,11 @@
 #include <QDebug>
 
-#include "QtSimulationDriver.h"
 #include "Constants.h"
+#include "QtSimulationDriver.h"
 
-QtSimulationDriver::QtSimulationDriver(QObject* parent)
-    : QObject(parent)
+QtSimulationDriver::QtSimulationDriver(QObject* parent) : QObject(parent)
 {
-    connect(
-        &m_timer, &QTimer::timeout,
-        this,
-        &QtSimulationDriver::onTimeout);
+    connect(&m_timer, &QTimer::timeout, this, &QtSimulationDriver::onTimeout);
 
     m_timer.start(Constants::SimulationUpdateIntervalMs);
 }

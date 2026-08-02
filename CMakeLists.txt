@@ -7,9 +7,97 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+#
+# Core sources
+#
+set(AUTOPILOT_CORE_SOURCES
+
+    src/controllers/AutopilotController.cpp
+    src/controllers/HeadingController.cpp
+    src/utils/MathUtils.cpp
+
+)
+
+set(AUTOPILOT_CORE_HEADERS
+    src/controllers/AutopilotController.h
+    src/controllers/HeadingController.h
+)
+
+set(QML_SOURCES
+    qml/Main.qml
+    qml/Dashboard.qml
+    qml/components/ValueCard.qml
+    qml/components/ModeSelector.qml
+    qml/components/Compass.qml
+    qml/components/NavButton.qml
+    qml/components/NumericInputDialog.qml
+    qml/components/RudderGauge.qml
+    qml/components/ModeButton.qml
+    qml/components/DebugRectangle.qml
+    qml/components/HeadingControl.qml
+)
+
+set(UI_SOURCES
+
+    src/main.cpp
+
+    src/viewmodels/SteeringViewModel.cpp
+    src/drivers/QtSimulationDriver.cpp
+
+)
+
+set(UI_HEADERS
+
+    src/viewmodels/SteeringViewModel.h
+    src/controllers/ControllerState.h
+    src/controllers/AutopilotMode.h
+
+    src/drivers/DriverState.h
+    src/drivers/DriverCommands.h
+    src/drivers/QtSimulationDriver.h
+
+    src/interfaces/IControllerDriver.h
+    src/interfaces/IControllerObserver.h
+    src/interfaces/IAutopilotCommands.h
+
+    src/viewmodels/DisplayState.h
+
+    src/utils/MathUtils.h
+
+    common/Constants.h
+)
+
+#
+# All C++ source files
+#
+set(ALL_SOURCE_FILES
+    ${AUTOPILOT_CORE_SOURCES}
+    ${AUTOPILOT_CORE_HEADERS}
+    ${UI_SOURCES}
+    ${UI_HEADERS}
+)
+
+find_program(CLANG_FORMAT_EXECUTABLE clang-format)
+
+if(NOT CLANG_FORMAT_EXECUTABLE)
+    message(WARNING "clang-format not found")
+endif()
+
+find_program(CLANG_TIDY_EXECUTABLE clang-tidy)
+
+if(NOT CLANG_TIDY_EXECUTABLE)
+    message(WARNING "clang-tidy not found")
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.10)
+
+find_package(Doxygen)
+
+if(NOT DOXYGEN_FOUND)
+    message(WARNING "Doxygen not found")
+endif()
 
 #
 # Optional imported content (Qt Design Studio)
@@ -21,17 +109,24 @@ endif()
 #
 # Libraries
 #
-add_library(AutopilotCore STATIC
-    src/controllers/AutopilotController.cpp
-    src/controllers/HeadingController.cpp
-    src/utils/MathUtils.cpp
+add_library(AutopilotCore
+    STATIC
+        ${AUTOPILOT_CORE_SOURCES}
+)
+
+#
+# Headers
+#
+target_sources(AutopilotCore
+    PRIVATE
+        ${AUTOPILOT_CORE_HEADERS}
 )
 
 #
 # Executable
 #
 qt_add_executable(appAutopilotHMI
-    src/main.cpp
+    ${UI_SOURCES}
 )
 
 #
@@ -41,57 +136,15 @@ qt_add_qml_module(appAutopilotHMI
     URI AutopilotHMI
 
     QML_FILES
-        qml/Main.qml
-        qml/Dashboard.qml
-        qml/components/ValueCard.qml
-        qml/components/ModeSelector.qml
-        qml/components/Compass.qml
-
+        ${QML_SOURCES}
 
     SOURCES
-        src/controllers/AutopilotController.h
-        src/controllers/AutopilotController.cpp
-        src/controllers/ControllerState.h
-        src/controllers/HeadingController.h
-        src/controllers/HeadingController.cpp
-        src/controllers/AutopilotMode.h
-
-        src/viewmodels/SteeringViewModel.h
-        src/viewmodels/SteeringViewModel.cpp
-        src/viewmodels/DisplayState.h
-
-        src/drivers/QtSimulationDriver.h
-        src/drivers/QtSimulationDriver.cpp
-        src/drivers/DriverState.h
-        src/drivers/DriverCommands.h
-
-        src/interfaces/IControllerObserver.h
-        src/interfaces/IControllerDriver.h
-        src/interfaces/IAutopilotCommands.h
-
-        common/Constants.h
-
-        src/utils/MathUtils.h
-        src/utils/MathUtils.cpp
+        ${UI_HEADERS}
 
     RESOURCES
         .clang-format
         .clangd
         .clang-tidy
-        QML_FILES qml/components/NavButton.qml
-        QML_FILES qml/components/NumericInputDialog.qml
-        QML_FILES qml/components/RudderGauge.qml
-        QML_FILES
-        QML_FILES qml/components/ModeButton.qml
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES qml/components/DebugRectangle.qml
-        QML_FILES qml/components/HeadingControl.qml
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        SOURCES
 )
 
 #
@@ -144,6 +197,63 @@ set_target_properties(appAutopilotHMI PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING
         ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
+
+if(CLANG_FORMAT_EXECUTABLE)
+
+    add_custom_target(check-format
+        COMMAND
+            ${CLANG_FORMAT_EXECUTABLE}
+            --dry-run
+            --Werror
+            ${ALL_CPP_FILES}
+
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+
+        COMMENT "Checking source formatting with clang-format"
+    )
+endif()
+
+if(CLANG_FORMAT_EXECUTABLE)
+
+    add_custom_target(format
+        COMMAND
+            ${CLANG_FORMAT_EXECUTABLE}
+            -i
+            ${ALL_CPP_FILES}
+
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+
+        COMMENT "Formatting source files"
+    )
+endif()
+
+if(CLANG_TIDY_EXECUTABLE)
+
+    add_custom_target(clang-tidy
+        COMMAND
+            ${CLANG_TIDY_EXECUTABLE}
+            -p ${CMAKE_BINARY_DIR}
+            ${AUTOPILOT_CORE_SOURCES}
+            ${UI_SOURCES}
+
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-tidy"
+    )
+endif()
+
+if(DOXYGEN_FOUND)
+
+    add_custom_target(docs
+        COMMAND
+            ${DOXYGEN_EXECUTABLE}
+            ${CMAKE_SOURCE_DIR}/Doxyfile
+
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+
+        COMMENT "Generating Doxygen documentation"
+    )
+
+endif()
 
 #
 # Installation
