@@ -79,7 +79,9 @@ set(ALL_SOURCE_FILES
     ${UI_HEADERS}
 )
 
-find_program(CLANG_FORMAT_EXECUTABLE clang-format)
+if(NOT CLANG_FORMAT_EXECUTABLE)
+    find_program(CLANG_FORMAT_EXECUTABLE clang-format)
+endif()
 
 if(NOT CLANG_FORMAT_EXECUTABLE)
     message(WARNING "clang-format not found")

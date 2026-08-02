@@ -34,6 +34,18 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build -V
 
+      - name: Install clang-format 22
+        run: |
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh 22
+
+      - name: Configure clang-format 22
+        run: |
+            cmake -B build \
+            -DCLANG_FORMAT_EXECUTABLE=/usr/bin/clang-format-22 \
+            -DBUILD_TESTS=ON
+
       - name: Check formatting
         run: cmake --build build --target check-format
 
