@@ -32,7 +32,7 @@ jobs:
         run: cmake --build build --parallel
 
       - name: Run tests
-        run: ctest --test-dir build --V
+        run: ctest --test-dir build -V
 
       - name: Check formatting
         run: cmake --build build --target check-format
