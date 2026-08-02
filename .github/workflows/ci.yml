@@ -32,4 +32,13 @@ jobs:
         run: cmake --build build --parallel
 
       - name: Run tests
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --V
+
+      - name: Check formatting
+        run: cmake --build build --target check-format
+
+      - name: Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen
+
+      - name: Generate documentation
+        run: cmake --build build --target docs
