@@ -1,4 +1,18 @@
-find_package(GTest REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+
+    googletest
+
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+
+)
+
+# Required on Windows, harmless elsewhere
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(googletest)
 
 add_executable(UnitTests
     HeadingControllerTest.cpp

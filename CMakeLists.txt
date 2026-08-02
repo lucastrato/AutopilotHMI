@@ -1,3 +1,5 @@
+include(FetchContent)
+
 cmake_minimum_required(VERSION 3.16)
 
 project(AutopilotHMI VERSION 0.1 LANGUAGES CXX)
@@ -205,7 +207,7 @@ if(CLANG_FORMAT_EXECUTABLE)
             ${CLANG_FORMAT_EXECUTABLE}
             --dry-run
             --Werror
-            ${ALL_CPP_FILES}
+            ${ALL_SOURCE_FILES}
 
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 
@@ -219,7 +221,7 @@ if(CLANG_FORMAT_EXECUTABLE)
         COMMAND
             ${CLANG_FORMAT_EXECUTABLE}
             -i
-            ${ALL_CPP_FILES}
+            ${ALL_SOURCE_FILES}
 
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 
