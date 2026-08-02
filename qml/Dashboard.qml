@@ -5,39 +5,37 @@ import QtQuick.Layouts
 import "components"
 
 Rectangle {
-    color: "#263238"
+    color: "#1E272C"
 
     GridLayout {
         anchors.centerIn: parent
 
         columns: 2
+
         rowSpacing: 20
         columnSpacing: 20
 
-        ValueCard {
-            title: "Heading"
-            value: steeringViewModel.heading
-            unit: "°"
+        Compass {
+            heading: steeringViewModel.heading
         }
 
         ValueCard {
-            title: "Target Heading"
+            title: "Heading"
+
             value: steeringViewModel.targetHeading
             unit: "°"
 
             editable: true
-            enabled: steeringViewModel.isAuto
+            controlsEnabled: steeringViewModel.isAuto
 
             onIncreaseClicked: steeringViewModel.increaseTargetHeading()
             onDecreaseClicked: steeringViewModel.decreaseTargetHeading()
         }
 
-        ValueCard {
-            title: "Rudder"
-            value: steeringViewModel.rudderAngle
-            unit: "°"
+        RudderGauge {
 
-            editable: true
+            rudderAngle: steeringViewModel.rudderAngle
+
             enabled: steeringViewModel.isManual
 
             onIncreaseClicked:
@@ -48,13 +46,10 @@ Rectangle {
         }
 
         ModeSelector {
-
             mode: steeringViewModel.mode
 
             onStandbyClicked: steeringViewModel.setStandbyMode()
-
             onManualClicked: steeringViewModel.setManualMode()
-
             onAutoClicked: steeringViewModel.setAutoMode()
         }
     }

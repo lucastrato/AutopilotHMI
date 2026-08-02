@@ -132,6 +132,14 @@ void SteeringViewModel::decreaseTargetHeading()
     m_commands.setTargetHeading(targetHeading - 1.0);
 }
 
+void SteeringViewModel::selectTargetHeading(double heading)
+{
+    if (m_displayState.mode != AutopilotMode::Auto)
+        return;
+
+    m_commands.setTargetHeading(heading);
+}
+
 void SteeringViewModel::increaseRudder()
 {
     if (m_displayState.mode != AutopilotMode::Manual)
@@ -150,6 +158,14 @@ void SteeringViewModel::decreaseRudder()
     const double rudder = std::round(m_displayState.rudderAngle);
 
     m_commands.setRudder(rudder - 1.0);
+}
+
+void SteeringViewModel::selectRudderAngle(double rudderAngle)
+{
+    if (m_displayState.mode != AutopilotMode::Manual)
+        return;
+
+    m_commands.setRudder(rudderAngle);
 }
 
 void SteeringViewModel::setStandbyMode()

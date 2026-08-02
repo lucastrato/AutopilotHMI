@@ -27,9 +27,11 @@ public:
 
     Q_INVOKABLE void increaseTargetHeading();
     Q_INVOKABLE void decreaseTargetHeading();
+    Q_INVOKABLE void selectTargetHeading(double heading);
 
     Q_INVOKABLE void increaseRudder();
     Q_INVOKABLE void decreaseRudder();
+    Q_INVOKABLE void selectRudderAngle(double rudderAngle);
 
     Q_INVOKABLE void setStandbyMode();
     Q_INVOKABLE void setManualMode();

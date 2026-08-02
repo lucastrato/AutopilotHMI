@@ -44,6 +44,9 @@ qt_add_qml_module(appAutopilotHMI
         qml/Main.qml
         qml/Dashboard.qml
         qml/components/ValueCard.qml
+        qml/components/ModeSelector.qml
+        qml/components/Compass.qml
+
 
     SOURCES
         src/controllers/AutopilotController.h
@@ -75,7 +78,9 @@ qt_add_qml_module(appAutopilotHMI
         .clang-format
         .clangd
         .clang-tidy
-        QML_FILES qml/components/ModeSelector.qml
+        QML_FILES qml/components/NavButton.qml
+        QML_FILES qml/components/NumericInputDialog.qml
+        QML_FILES qml/components/RudderGauge.qml
 )
 
 #
